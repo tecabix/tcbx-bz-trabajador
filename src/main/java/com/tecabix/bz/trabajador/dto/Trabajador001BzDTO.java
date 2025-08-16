@@ -11,6 +11,7 @@ import com.tecabix.db.repository.DireccionRepository;
 import com.tecabix.db.repository.EstadoRepository;
 import com.tecabix.db.repository.MunicipioRepository;
 import com.tecabix.db.repository.PerfilRepository;
+import com.tecabix.db.repository.PersonaFisicaRepository;
 import com.tecabix.db.repository.PersonaRepository;
 import com.tecabix.db.repository.PuestoRepository;
 import com.tecabix.db.repository.SalarioRepository;
@@ -97,6 +98,12 @@ public class Trabajador001BzDTO {
      * {@link Persona}.
      */
     private PersonaRepository personaRepository;
+    
+    /**
+     * Repositorio para realizar operaciones CRUD sobre la entidad
+     * {@link PersonaFisica}.
+     */
+    private PersonaFisicaRepository personaFisicaRepository;
 
     /**
      * Repositorio para acceder a la entidad Cuenta.
@@ -469,5 +476,13 @@ public class Trabajador001BzDTO {
         this.sucursalRepository = repository;
     }
 
+    public PersonaFisicaRepository getPersonaFisicaRepository() {
+        return personaFisicaRepository;
+    }
 
+    public void setPersonaFisicaRepository(final PersonaFisicaRepository repository) {
+        this.personaFisicaRepository = repository;
+    }
+
+    
 }

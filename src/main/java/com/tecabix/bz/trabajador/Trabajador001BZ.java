@@ -38,6 +38,7 @@ import com.tecabix.db.repository.DireccionRepository;
 import com.tecabix.db.repository.EstadoRepository;
 import com.tecabix.db.repository.MunicipioRepository;
 import com.tecabix.db.repository.PerfilRepository;
+import com.tecabix.db.repository.PersonaFisicaRepository;
 import com.tecabix.db.repository.PersonaRepository;
 import com.tecabix.db.repository.PuestoRepository;
 import com.tecabix.db.repository.SalarioRepository;
@@ -120,6 +121,12 @@ public abstract class Trabajador001BZ {
      * {@link Persona}.
      */
     private final PersonaRepository personaRepository;
+    
+    /**
+     * Repositorio para realizar operaciones CRUD sobre la entidad
+     * {@link PersonaFisica}.
+     */
+    private final PersonaFisicaRepository personaFisicaRepository;
 
     /**
      * Repositorio para acceder a la entidad Cuenta.
@@ -149,11 +156,6 @@ public abstract class Trabajador001BZ {
     private final SucursalRepository sucursalRepository;
 
     /**
-     * Mensaje cuando no hay coincidencias con el tipo de contacto.
-     */
-    private static final String SIN_COINCIDENCIAS_TIPO_DE_CONTACTO;
-
-    /**
      * Catálogo que representa el estado "Activo" en el sistema.
      */
     private final Catalogo activo;
@@ -180,11 +182,6 @@ public abstract class Trabajador001BZ {
     private static final String TELEFONO;
 
     /**
-     * Representa el identificador del periodo de pago del salario.
-     */
-    private static final String PERIODO;
-
-    /**
      * Constante que representa el identificador del tipo de persona.
      */
     private static final String PERSONA;
@@ -194,6 +191,101 @@ public abstract class Trabajador001BZ {
      */
     private static final String FISICA;
 
+    /**
+     * Mensaje cuando no hay coincidencias con el tipo de contacto.
+     */
+    private static final String SIN_COINCIDENCIAS_TIPO_DE_CONTACTO;
+
+    /**
+     * Mensaje cuando no hay coincidencias con la clave de sexo.
+     */
+    private static final String SIN_COINCIDENCIAS_CLAVE_SEXO;
+    
+    /**
+     * Mensaje cuando no hay coincidencias con el nombre de sexo.
+     */
+    private static final String SIN_COINCIDENCIAS_NOMBRE_SEXO;
+    
+    /**
+     * Persona fisica no encontrada.
+     */
+    private static final String NO_SE_ENCONTRO_PERSONA_FISICA;
+    
+    /**
+     * Municipio no encontrado.
+     */
+    private static final String NO_SE_ENCONTRO_EL_MUNICIPIO;
+
+    /**
+     * Municipio no encontrado.
+     */
+    private static final String NO_SE_ENCONTRO_EL_ESTADO;
+    
+    /**
+     * Banco no encontrado.
+     */
+    private static final String NO_SE_ENCONTRO_EL_BANCO;
+
+    /**
+     * Sucursal no encontrada.
+     */
+    private static final String NO_SE_ENCONTRO_LA_SUCURSAL;
+    
+    /**
+     * Jefe no encontrado.
+     */
+    private static final String NO_SE_ENCONTRO_JEFE;
+    
+    /**
+     * Puesto no encontrado.
+     */
+    private static final String NO_SE_ENCONTRO_PUESTO;
+    
+    /**
+     * Estatus de puesto es inactivo.
+     */
+    private static final String PUESTO_ESTATUS_INACTIVO;
+    
+    /**
+     * Turno no encontrado.
+     */
+    private static final String NO_SE_ENCONTRO_TURNO;
+
+    /**
+     * Tipo pago no encontrado.
+     */
+    private static final String NO_SE_ENCONTRO_TIPO_PAGO;
+    
+    /**
+     * Tipo periodo no encontrado.
+     */
+    private static final String NO_SE_ENCONTRO_TIPO_PERIODO;
+    
+    /**
+     * Estatus de turno es inactivo.
+     */
+    private static final String TURNO_ESTATUS_INACTIVO;
+    
+    /**
+     * Perfil no encontrado.
+     */
+    private static final String NO_SE_ENCONTRO_PERFIL;
+    
+    /**
+     * Estatus de perfil es inactivo.
+     */
+    private static final String PERFIL_ESTATUS_INACTIVO;
+
+    /**
+     * Mensaje cuando el username ya existe.
+     */
+    private static final String USERNAME_YA_EXISTE;
+
+    /**
+     * Mensaje cuando el CURP ya existe.
+     */
+    private static final String CURP_YA_EXISTE;
+    
     /**
      * Constructor que inicializa una instancia de {@code Trabajador001BZ}
      * utilizando los datos proporcionados en el objeto
@@ -223,14 +315,32 @@ public abstract class Trabajador001BZ {
         this.usuarioRepository = dto.getUsuarioRepository();
         this.contactoRepository = dto.getContactoRepository();
         this.sucursalRepository = dto.getSucursalRepository();
+        this.personaFisicaRepository = dto.getPersonaFisicaRepository();
     }
 
     static {
         SIN_COINCIDENCIAS_TIPO_DE_CONTACTO = "Sin coincidencias con el tipo de contacto.";
-        CORREO = "(?!\\s)([A-Za-zñÑáéíóúÁÉÍÓÚüÜ0-9]+[...]";
-        URL = "(?=.{15,45}$)https?:\\/\\/[A-Za-zñÑáéíóúÁÉÍÓÚüÜ0-9]+[...]";
+        SIN_COINCIDENCIAS_CLAVE_SEXO = "No se encontró la clave sexo";
+        SIN_COINCIDENCIAS_NOMBRE_SEXO = "No se encontró el nombre sexo.";
+        NO_SE_ENCONTRO_PERSONA_FISICA = "No se encontro a la persona fisica.";
+        NO_SE_ENCONTRO_EL_MUNICIPIO = "No se encontro el municipio.";
+        NO_SE_ENCONTRO_EL_ESTADO = "No se encontro el estado.";
+        NO_SE_ENCONTRO_JEFE = "No se encontró jefe.";
+        NO_SE_ENCONTRO_PUESTO = "No se encontro puesto.";
+        PUESTO_ESTATUS_INACTIVO = "El estatus de puesto es inactivo.";
+        NO_SE_ENCONTRO_TURNO = "No se encontró turno.";
+        TURNO_ESTATUS_INACTIVO = "El estatus de turno es inactivo";
+        NO_SE_ENCONTRO_PERFIL = "No se encontró perfil.";
+        PERFIL_ESTATUS_INACTIVO = "El estatus de perfil es inactivo";
+        USERNAME_YA_EXISTE = "El username ya existe.";
+        NO_SE_ENCONTRO_EL_BANCO = "No se encontró el banco.";
+        NO_SE_ENCONTRO_LA_SUCURSAL = "No se encontró la sucursal.";
+        NO_SE_ENCONTRO_TIPO_PAGO = "No se encontró el tipo pago.";
+        NO_SE_ENCONTRO_TIPO_PERIODO = "No se encontró el tipo periodo.";
+        CURP_YA_EXISTE = "El CURP ya existe.";
+        CORREO = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        URL = "^https?:\\\\/\\\\/(?:www\\\\.)?[a-zA-Z0-9-]+\\\\.[a-zA-Z]{2,6}(?:\\\\/[^\\\\s]*)?$";
         TELEFONO = "\\d{10}";
-        PERIODO = "PERIODO_SALARIO";
         PERSONA = "TIPO_DE_PERSONA";
         FISICA = "FISICA";
     }
@@ -256,6 +366,14 @@ public abstract class Trabajador001BZ {
         if (contactosC == null) {
             return rsb029.badRequest(SIN_COINCIDENCIAS_TIPO_DE_CONTACTO);
         }
+        
+        if (usuarioRepository.findByNameRegardlessOfStatus(rqsv037.getUsuario()).isPresent()) {
+            return rsb029.badRequest(USERNAME_YA_EXISTE);
+        }
+
+        if (personaFisicaRepository.findByCurp(rqsv037.getCurp()).isPresent()) {
+            return rsb029.badRequest(CURP_YA_EXISTE);
+        }
 
         String nombre = rqsv037.getNombre();
         PersonaFisica personaFisica = new PersonaFisica();
@@ -264,6 +382,7 @@ public abstract class Trabajador001BZ {
         Persona persona = new Persona();
         persona.setContactos(contactosC);
         personaFisica.setPersona(persona);
+
 
         String calle = rqsv037.getCalle();
         String asentamiento = rqsv037.getAsentamiento();
@@ -283,78 +402,131 @@ public abstract class Trabajador001BZ {
         Optional<Catalogo> sexoOpt;
         sexoOpt = catalogoRepository.findByClave(sexo);
         if (sexoOpt.isEmpty()) {
-            return null;
+            return rsb029.badRequest(SIN_COINCIDENCIAS_CLAVE_SEXO);
         }
 
         Catalogo tipoS = sexoOpt.get();
         String sexoNombre = tipoS.getNombre();
-        String tipo = sexo.toString();
+        String tipoNombre = tipoS.getCatalogoTipo().getNombre();
         Optional<Catalogo> optCatalogoS;
-        optCatalogoS = catalogoRepository.findByTipoAndNombre(tipo, sexoNombre);
+        optCatalogoS = catalogoRepository.findByTipoAndNombre(tipoNombre, sexoNombre);
         if (optCatalogoS.isEmpty()) {
-            return null;
+            return rsb029.badRequest(SIN_COINCIDENCIAS_NOMBRE_SEXO);
         }
 
         Optional<Catalogo> personaOpt;
         personaOpt = catalogoRepository.findByTipoAndNombre(PERSONA, FISICA);
         if (personaOpt.isEmpty()) {
-            return null;
+            return rsb029.badRequest(NO_SE_ENCONTRO_PERSONA_FISICA);
         }
 
         UUID claveMunicipio = rqsv037.getMunicipio();
         Optional<Municipio> municipioOpt;
         municipioOpt = municipioRepository.findByClave(claveMunicipio);
         if (municipioOpt.isEmpty()) {
-            return null;
+            return rsb029.badRequest(NO_SE_ENCONTRO_EL_MUNICIPIO);
         }
         direccion.setMunicipio(municipioOpt.get());
+
+        UUID claveEntidadFederativa = rqsv037.getEntidadFederativa();
+        Optional<Estado> entidadFederativaOpt;
+        entidadFederativaOpt = estadoRepository.findByClave(claveEntidadFederativa);
+        if (entidadFederativaOpt.isEmpty()) {
+            return rsb029.badRequest(NO_SE_ENCONTRO_EL_ESTADO);
+        }
 
         UUID claveJefe = rqsv037.getJefe();
         Optional<Trabajador> trabajadorOpt;
         trabajadorOpt = trabajadorRepository.findByClave(claveJefe);
         if (trabajadorOpt.isEmpty()) {
-            return null;
+            return rsb029.badRequest(NO_SE_ENCONTRO_JEFE);
+        }
+
+        UUID claveBanco = rqsv037.getBanco();
+        Optional<Banco> bancoOpt;
+        bancoOpt = bancoRepository.findByClave(claveBanco);
+        if (bancoOpt.isEmpty()) {
+            return rsb029.badRequest(NO_SE_ENCONTRO_EL_BANCO);
         }
 
         Trabajador trabajador = new Trabajador();
         trabajador.setJefe(trabajadorOpt.get());
 
         UUID claveSucursal = rqsv037.getSucursal();
+        Optional<Sucursal> sucursalOpt;
+        sucursalOpt = sucursalRepository.findByClave(claveSucursal);
+        if (sucursalOpt.isEmpty()) {
+            return rsb029.badRequest(NO_SE_ENCONTRO_LA_SUCURSAL);
+        }
+
         Sucursal sucursal = new Sucursal();
-        sucursal.setClave(claveSucursal);
+        sucursal.setClave(UUID.randomUUID());
+        sucursal.setGerente(trabajador.getJefe());
+        sucursal.setDireccion(direccion);
+        sucursal.setFechaDeModificacion(LocalDateTime.now());
+        sucursal.setEstatus(activo);
+        sucursal.setIdUsuarioModificado(sesion.getIdUsuarioModificado());
 
         UUID clavePuesto = rqsv037.getPuesto();
         Optional<Puesto> puestoOpt = puestoRepository.findByClave(clavePuesto);
         if (puestoOpt.isEmpty()) {
-            return null;
+            return rsb029.badRequest(NO_SE_ENCONTRO_PUESTO);
         }
         trabajador.setPuesto(puestoOpt.get());
         if (!trabajador.getPuesto().getEstatus().equals(activo)) {
-            return null;
+            return rsb029.badRequest(PUESTO_ESTATUS_INACTIVO);
         }
 
         UUID claveTurno = rqsv037.getTurno();
         Optional<Turno> turnoOpt = turnoRepository.findByClave(claveTurno);
         if (turnoOpt.isEmpty()) {
-            return null;
+            return rsb029.badRequest(NO_SE_ENCONTRO_TURNO);
         }
+        
+        UUID claveTipoPago = rqsv037.getTipoPago();
+        Optional<Catalogo> tipoPagoOpt;
+        tipoPagoOpt = catalogoRepository.findByClave(claveTipoPago);
+        if (tipoPagoOpt.isEmpty()) {
+            return rsb029.badRequest(NO_SE_ENCONTRO_TIPO_PAGO);
+        }
+        
+        UUID claveTipoPeriodo = rqsv037.getTipoPeriodo();
+        Optional<Catalogo> tipoPeriodoOpt;
+        tipoPeriodoOpt = catalogoRepository.findByClave(claveTipoPeriodo);
+        if (tipoPeriodoOpt.isEmpty()) {
+            return rsb029.badRequest(NO_SE_ENCONTRO_TIPO_PERIODO);
+        }
+
         trabajador.setTurno(turnoOpt.get());
         if (!trabajador.getTurno().getEstatus().equals(activo)) {
-            return null;
+            return rsb029.badRequest(TURNO_ESTATUS_INACTIVO);
         }
 
         UUID clavePerfil = rqsv037.getPerfil();
         Optional<Perfil> perfilOpt = perfilRepository.findByClave(clavePerfil);
         if (perfilOpt.isEmpty()) {
-            return null;
+            return rsb029.badRequest(NO_SE_ENCONTRO_PERFIL);
         }
 
         Catalogo estatusPerfil = perfilOpt.get().getEstatus();
 
         Perfil perfil = new Perfil();
+
         if (!estatusPerfil.equals(activo)) {
-            return null;
+            return rsb029.badRequest(PERFIL_ESTATUS_INACTIVO);
         }
+        
+        perfil.setAutorizaciones(perfilOpt.get().getAutorizaciones());
+        perfil.setClave(perfilOpt.get().getClave());
+        perfil.setDescripcion(perfilOpt.get().getDescripcion());
+        perfil.setEstatus(perfilOpt.get().getEstatus());
+        perfil.setFechaDeModificacion(perfilOpt.get().getFechaDeModificacion());
+        perfil.setId(perfilOpt.get().getId());
+        perfil.setIdUsuarioModificado(perfilOpt.get().getIdUsuarioModificado());
+        perfil.setNombre(perfilOpt.get().getNombre());
+        perfil.setTipo(perfilOpt.get().getTipo());
+        perfil = perfilRepository.save(perfil);
+
         LocalDateTime now =  LocalDateTime.now();
         Usuario usuario = crearUsuario(rqsv037, sesion, now, perfil);
         Salario salario = crearSalario(rqsv037, sesion, now, perfil);
@@ -362,28 +534,51 @@ public abstract class Trabajador001BZ {
 
         direccion.setClave(UUID.randomUUID());
         direccion.setEstatus(activo);
+        direccion.setEntreCalle(rqsv037.getEntreCalle());
+        direccion.setCodigoPostal(rqsv037.getCodigoPostal());
         direccion.setFechaDeModificacion(LocalDateTime.now());
         direccion.setIdUsuarioModificado(sesion.getUsuario().getId());
+        direccion.setLatitud(rqsv037.getLatitud());
+        direccion.setLongitud(rqsv037.getLongitud());
         direccion = direccionRepository.save(direccion);
 
         persona.setClave(UUID.randomUUID());
         persona.setIdUsuarioModificado(sesion.getUsuario().getId());
         persona.setFechaDeModificacion(LocalDateTime.now());
         persona.setEstatus(activo);
+        persona.setTipo(personaOpt.get());
         List<Contacto> contactos = persona.getContactos();
         persona = personaRepository.save(persona);
 
         crearCuenta(usuario, sesion, now);
-
+        
+        sucursal = sucursalRepository.save(sucursal);
+        if(rqsv037.getApellidoPaterno().isPresent()) {
+             personaFisica.setApellidoPaterno(rqsv037.getApellidoPaterno().get());
+        }
+        
+        if(rqsv037.getApellidoMaterno().isPresent()) {
+            personaFisica.setApellidoMaterno(rqsv037.getApellidoMaterno().get());
+       }
+        
+        personaFisica.setCurp(rqsv037.getCurp());
+        personaFisica.setIdUsuarioModificado(usuario.getIdUsuarioModificado());
+        personaFisica.setFechaDeModificacion(LocalDateTime.now());
+        personaFisica.setEstatus(activo);
+        personaFisica.setClave(UUID.randomUUID());
+        personaFisica = personaFisicaRepository.save(personaFisica);
+        
         trabajador.setClave(UUID.randomUUID());
+        
         trabajador.setEstatus(activo);
         trabajador.setFechaDeModificacion(LocalDateTime.now());
         trabajador.setIdUsuarioModificado(sesion.getUsuario().getId());
         trabajador.setSucursal(sucursal);
         trabajador.setSalario(salario);
         trabajador.setSeguroSocial(seguroSocial);
+        trabajador.setPersonaFisica(personaFisica);
         trabajador = trabajadorRepository.save(trabajador);
-
+        
         UsuarioPersona usuarioPersona;
         usuarioPersona = crearUsuarioPersona(usuario, persona, sesion, now);
         persona.setUsuarioPersona(usuarioPersona);
@@ -405,7 +600,7 @@ public abstract class Trabajador001BZ {
 
             Contacto contactoObj = new Contacto();
             contactoObj.setValor(contactoRq.getValor());
-
+            
             Optional<Catalogo> contactoOpt;
             contactoOpt = catalogoRepository.findByClave(contactoRq.getTipo());
             if (contactoOpt.isEmpty()) {
@@ -424,12 +619,14 @@ public abstract class Trabajador001BZ {
 
             String tipoNombre = tipo.getNombre();
             String valor = contactoObj.getValor();
+
             boolean invalido = switch (tipoNombre) {
                 case "E-MAIL" -> isNotValid(CORREO, valor);
                 case "SITIO-WEB" -> isNotValid(URL, valor);
                 default -> tipoNombre.contains("TEL")
                     && isNotValid(TELEFONO, valor);
             };
+            
 
             if (invalido) {
                 return null;
@@ -447,6 +644,7 @@ public abstract class Trabajador001BZ {
         Usuario usuario = new Usuario();
         usuario.setClave(UUID.randomUUID());
         usuario.setPerfil(perfil);
+        usuario.setNombre(rqsv037.getUsuario());
         usuario.setPassword(encoder(rqsv037.getPassword()));
         usuario.setFechaDeModificacion(now);
         usuario.setIdUsuarioModificado(sesion.getUsuario().getId());
@@ -464,6 +662,7 @@ public abstract class Trabajador001BZ {
         cuenta.setFechaDeModificacion(LocalDateTime.now());
         cuenta.setIdUsuarioModificado(sesion.getUsuario().getId());
         cuenta.setEstatus(activo);
+        cuenta.setUsuario(usuario);
         return cuentaRepository.save(cuenta);
     }
 
@@ -487,9 +686,8 @@ public abstract class Trabajador001BZ {
         if (sucursalOpt.isEmpty()) {
             return null;
         }
-        String numeroCuenta = rqsv037.getNumeroCuenta();
+
         String claveInterbancaria = rqsv037.getClaveInterBancaria();
-        salario.setNumeroCuenta(numeroCuenta);
         salario.setSucursal(sucursalOpt.get().getNombre());
         salario.setClaveInterBancaria(claveInterbancaria);
 
@@ -502,8 +700,8 @@ public abstract class Trabajador001BZ {
         salario.setTipoPago(catalogoPagoOpt.get());
 
         Optional<Catalogo> periodoOpt;
-        String nombreS = salario.getTipoPago().getNombre();
-        periodoOpt = catalogoRepository.findByTipoAndNombre(PERIODO, nombreS);
+        UUID tipoPeriodo =  rqsv037.getTipoPeriodo();
+        periodoOpt = catalogoRepository.findByClave(tipoPeriodo);
         if (periodoOpt.isEmpty()) {
             return null;
         }
@@ -555,6 +753,7 @@ public abstract class Trabajador001BZ {
         seguroSocial.setEstatus(activo);
         seguroSocial.setFechaDeModificacion(now);
         seguroSocial.setIdUsuarioModificado(sesion.getUsuario().getId());
+        seguroSocial.setNumero(rqsv037.getNss());
 
         return seguroSocialRepository.save(seguroSocial);
     }
