@@ -496,6 +496,13 @@ public abstract class Trabajador001BZ {
         if (tipoPeriodoOpt.isEmpty()) {
             return rsb029.badRequest(NO_SE_ENCONTRO_TIPO_PERIODO);
         }
+        
+        Catalogo tipoPeriodoCat = tipoPeriodoOpt.get();
+        String tipoNombreCat = tipoPeriodoCat.getCatalogoTipo().getNombre();
+        
+        if(!tipoNombreCat.equals("PERIODO_SALARIO")) {
+            return rsb029.badRequest(NO_SE_ENCONTRO_TIPO_PERIODO);
+        }
 
         trabajador.setTurno(turnoOpt.get());
         if (!trabajador.getTurno().getEstatus().equals(activo)) {
