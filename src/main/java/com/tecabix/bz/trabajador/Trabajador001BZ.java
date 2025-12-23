@@ -10,13 +10,15 @@ import java.util.regex.Pattern;
 
 import org.springframework.http.ResponseEntity;
 
-import com.tecabix.bz.trabajador.dto.Trabajador001BzDTO;
 import com.tecabix.db.entity.Banco;
 import com.tecabix.db.entity.Catalogo;
+import com.tecabix.db.entity.Cliente;
 import com.tecabix.db.entity.Contacto;
+import com.tecabix.db.entity.Credito;
 import com.tecabix.db.entity.Cuenta;
 import com.tecabix.db.entity.Direccion;
 import com.tecabix.db.entity.Estado;
+import com.tecabix.db.entity.InversionAutomatica;
 import com.tecabix.db.entity.Municipio;
 import com.tecabix.db.entity.Perfil;
 import com.tecabix.db.entity.Persona;
@@ -32,10 +34,13 @@ import com.tecabix.db.entity.Usuario;
 import com.tecabix.db.entity.UsuarioPersona;
 import com.tecabix.db.repository.BancoRepository;
 import com.tecabix.db.repository.CatalogoRepository;
+import com.tecabix.db.repository.ClienteRepository;
 import com.tecabix.db.repository.ContactoRepository;
+import com.tecabix.db.repository.CreditoRepository;
 import com.tecabix.db.repository.CuentaRepository;
 import com.tecabix.db.repository.DireccionRepository;
 import com.tecabix.db.repository.EstadoRepository;
+import com.tecabix.db.repository.InversionAutomaticaRepository;
 import com.tecabix.db.repository.MunicipioRepository;
 import com.tecabix.db.repository.PerfilRepository;
 import com.tecabix.db.repository.PersonaFisicaRepository;
@@ -57,6 +62,24 @@ import com.tecabix.sv.rq.RQSV037;
  * @author Ramirez Urrutia Angel Abinadi
  */
 public abstract class Trabajador001BZ {
+	
+	private static final int LIMITE_CREDITICIO = 350_00;
+
+    /**
+     * Repositorio para realizar operaciones CRUD sobre la entidad {@link Credito}.
+     */
+    private final CreditoRepository creditoRepository;
+	
+    /**
+     * Repositorio para realizar operaciones CRUD sobre la entidad
+     * {@link InversionAutomatica}.
+     */
+    private final InversionAutomaticaRepository inversionAutomaticaRepository;
+	
+	/**
+     * Repositorio para realizar operaciones CRUD sobre la entidad {@link Cliente}.
+     */
+    private final ClienteRepository clienteRepository;
 
     /**
      * Repositorio para acceder a la entidad Catalogo.
@@ -154,6 +177,12 @@ public abstract class Trabajador001BZ {
      * Repositorio para manejar operaciones de la entidad Sucursal.
      */
     private final SucursalRepository sucursalRepository;
+   
+    /**
+     * Catálogo que define el nivel de riesgo de crédito (C7) asignado a nuevos
+     * clientes.
+     */
+    private final Catalogo riesgoC7;
 
     /**
      * Catálogo que representa el estado "Activo" en el sistema.
@@ -286,39 +315,47 @@ public abstract class Trabajador001BZ {
      */
     private static final String CURP_YA_EXISTE;
     
-    /**
-     * Constructor que inicializa una instancia de {@code Trabajador001BZ}
-     * utilizando los datos proporcionados en el objeto
-     * {@code Trabajador001BzDTO}.
-     *
-     * @param dto Objeto de transferencia de datos que contiene las
-     *            dependencias necesarias para inicializar los repositorios
-     *            y atributos del trabajador.
-     */
-    public Trabajador001BZ(final Trabajador001BzDTO dto) {
-        this.tipoContacto = dto.getTipoContacto();
-        this.activo = dto.getActivo();
-        this.catalogoRepository = dto.getCatalogoRepository();
-        this.municipioRepository = dto.getMunicipioRepository();
-        this.trabajadorRepository = dto.getTrabajadorRepository();
-        this.puestoRepository = dto.getPuestoRepository();
-        this.turnoRepository = dto.getTurnoRepository();
-        this.bancoRepository = dto.getBancoRepository();
-        this.estadoRepository = dto.getEstadoRepository();
-        this.perfilRepository = dto.getPerfilRepository();
-        this.salarioRepository = dto.getSalarioRepository();
-        this.seguroSocialRepository = dto.getSeguroSocialRepository();
-        this.direccionRepository = dto.getDireccionRepository();
-        this.personaRepository = dto.getPersonaRepository();
-        this.cuentaRepository = dto.getCuentaRepository();
-        this.usuarioPersonaRepository = dto.getUsuarioPersonaRepository();
-        this.usuarioRepository = dto.getUsuarioRepository();
-        this.contactoRepository = dto.getContactoRepository();
-        this.sucursalRepository = dto.getSucursalRepository();
-        this.personaFisicaRepository = dto.getPersonaFisicaRepository();
-    }
+    
 
-    static {
+    public Trabajador001BZ(CreditoRepository creditoRepository,
+			InversionAutomaticaRepository inversionAutomaticaRepository, ClienteRepository clienteRepository,
+			CatalogoRepository catalogoRepository, MunicipioRepository municipioRepository,
+			TrabajadorRepository trabajadorRepository, PuestoRepository puestoRepository,
+			TurnoRepository turnoRepository, BancoRepository bancoRepository, EstadoRepository estadoRepository,
+			SalarioRepository salarioRepository, SeguroSocialRepository seguroSocialRepository,
+			PerfilRepository perfilRepository, DireccionRepository direccionRepository,
+			PersonaRepository personaRepository, PersonaFisicaRepository personaFisicaRepository,
+			CuentaRepository cuentaRepository, UsuarioPersonaRepository usuarioPersonaRepository,
+			UsuarioRepository usuarioRepository, ContactoRepository contactoRepository,
+			SucursalRepository sucursalRepository, Catalogo riesgoC7, Catalogo activo, List<Catalogo> tipoContacto) {
+    	
+		this.creditoRepository = creditoRepository;
+		this.inversionAutomaticaRepository = inversionAutomaticaRepository;
+		this.clienteRepository = clienteRepository;
+		this.catalogoRepository = catalogoRepository;
+		this.municipioRepository = municipioRepository;
+		this.trabajadorRepository = trabajadorRepository;
+		this.puestoRepository = puestoRepository;
+		this.turnoRepository = turnoRepository;
+		this.bancoRepository = bancoRepository;
+		this.estadoRepository = estadoRepository;
+		this.salarioRepository = salarioRepository;
+		this.seguroSocialRepository = seguroSocialRepository;
+		this.perfilRepository = perfilRepository;
+		this.direccionRepository = direccionRepository;
+		this.personaRepository = personaRepository;
+		this.personaFisicaRepository = personaFisicaRepository;
+		this.cuentaRepository = cuentaRepository;
+		this.usuarioPersonaRepository = usuarioPersonaRepository;
+		this.usuarioRepository = usuarioRepository;
+		this.contactoRepository = contactoRepository;
+		this.sucursalRepository = sucursalRepository;
+		this.riesgoC7 = riesgoC7;
+		this.activo = activo;
+		this.tipoContacto = tipoContacto;
+	}
+
+	static {
         SIN_COINCIDENCIAS_TIPO_DE_CONTACTO = "Sin coincidencias con el tipo de contacto.";
         SIN_COINCIDENCIAS_CLAVE_SEXO = "No se encontró la clave sexo";
         SIN_COINCIDENCIAS_NOMBRE_SEXO = "No se encontró el nombre sexo.";
@@ -557,7 +594,7 @@ public abstract class Trabajador001BZ {
         List<Contacto> contactos = persona.getContactos();
         persona = personaRepository.save(persona);
 
-        crearCuenta(usuario, sesion, now);
+        Cuenta cuenta = crearCuenta(usuario, sesion, now);
         
         sucursal = sucursalRepository.save(sucursal);
         if(rqsv037.getApellidoPaterno().isPresent()) {
@@ -594,6 +631,35 @@ public abstract class Trabajador001BZ {
             contacto.setPersona(persona);
             contactoRepository.save(contacto);
         }
+        
+        Cliente cliente = new Cliente();
+        cliente.setPersonaFisica(personaFisica);
+        cliente.setCuenta(cuenta);
+        cliente.setIdUsuarioModificado(sesion.getUsuario().getId());
+        cliente.setFechaDeModificacion(now);
+        cliente.setEstatus(activo);
+        cliente.setClave(UUID.randomUUID());
+        clienteRepository.save(cliente);
+        
+        InversionAutomatica inversionAutomatica = new InversionAutomatica();
+        inversionAutomatica.setCuenta(cuenta);
+        inversionAutomatica.setIdUsuarioModificado(sesion.getUsuario().getId());
+        inversionAutomatica.setFechaModificado(now);
+        inversionAutomatica.setEstatus(activo);
+        inversionAutomatica.setClave(UUID.randomUUID());
+        inversionAutomaticaRepository.save(inversionAutomatica);
+        
+        Credito credito = new Credito();
+        credito.setUsuario(usuario);
+        credito.setLimite(LIMITE_CREDITICIO);
+        credito.setDisponible(credito.getLimite());
+        credito.setTipo(riesgoC7);
+        credito.setCalificacion(-1);
+        credito.setIdUsuarioModificado(sesion.getUsuario().getId());
+        credito.setFechaModificado(now);
+        credito.setEstatus(activo);
+        credito.setClave(UUID.randomUUID());
+        creditoRepository.save(credito);
 
         return rsb029.ok(trabajador);
     }
