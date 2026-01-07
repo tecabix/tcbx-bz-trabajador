@@ -722,6 +722,7 @@ public abstract class Trabajador001BZ {
         usuario.setFechaDeModificacion(now);
         usuario.setIdUsuarioModificado(sesion.getUsuario().getId());
         usuario.setEstatus(activo);
+        usuario.setCorreo(rqsv037.getCorreo());
         usuarioRepository.save(usuario);
         return usuario;
     }
